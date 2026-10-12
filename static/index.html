@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audion | Smart PDF to Audiobook Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            },
+            surface: {
+              950: '#07090e',
+              900: '#0d1117',
+              850: '#131923',
+              800: '#1a2230',
+              750: '#232d3f',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-surface-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-brand-500/30 selection:text-brand-300">
+
+  <!-- Ambient Glow Effects -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-brand-600/10 blur-[130px] rounded-full pointer-events-none -z-10"></div>
+  <div class="fixed bottom-0 right-0 w-[500px] h-[300px] bg-indigo-600/10 blur-[140px] rounded-full pointer-events-none -z-10"></div>
+
+  <!-- Header -->
+  <header class="border-b border-white/5 backdrop-blur-md bg-surface-950/70 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-amber-400 flex items-center justify-center shadow-lg shadow-brand-500/20 text-slate-950 font-black">
+          <i data-lucide="headphones" class="w-5 h-5 text-slate-950"></i>
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">Audion</span>
+          <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 ml-2">Studio POC</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="btnOpenModelGuide" class="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-400"></i>
+          <span>TTS Models & Costs</span>
+        </button>
+        <span class="text-xs text-slate-500 flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Free Neural Engine
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+    <!-- Hero Title -->
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-slate-300 mb-4">
+        <i data-lucide="book-open" class="w-3.5 h-3.5 text-brand-400"></i>
+        <span>Any PDF &bull; Scanned Pages &bull; Smart Layout Filtering</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-serif font-medium tracking-tight text-white mb-3 leading-tight">
+        Turn Any PDF into a <span class="italic text-brand-400">Natural Audiobook</span>
+      </h1>
+      <p class="text-slate-400 text-sm sm:text-base max-w-xl mx-auto">
+        Upload scanned photos or digital PDFs. Our smart filter strips headers, footers, and page noise so only the genuine story is read aloud.
+      </p>
+    </div>
+
+    <!-- STAGE 1: Upload & Configuration -->
+    <section id="uploadSection" class="space-y-6">
+      
+      <!-- Dropzone Card -->
+      <div class="rounded-2xl border border-white/10 bg-surface-900/60 backdrop-blur-xl p-6 sm:p-8 shadow-2xl relative overflow-hidden group">
+        
+        <!-- Drag and drop target -->
+        <div id="dropzone" class="border-2 border-dashed border-white/15 hover:border-brand-500/50 rounded-xl p-8 text-center transition-all cursor-pointer bg-surface-950/40 hover:bg-brand-500/5">
+          <input type="file" id="fileInput" accept=".pdf" class="hidden">
+          
+          <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:border-brand-500/30 transition-all text-brand-400">
+            <i data-lucide="file-up" class="w-8 h-8"></i>
+          </div>
+
+          <p class="text-base font-medium text-slate-200 mb-1">
+            Drop your PDF here, or <span class="text-brand-400 underline underline-offset-4 decoration-brand-400/40 hover:decoration-brand-400">browse file</span>
+          </p>
+          <p class="text-xs text-slate-400">
+            Supports digital books, articles, and scanned photo PDFs (up to 100MB)
+          </p>
+        </div>
+
+        <!-- Selected File Status Box -->
+        <div id="selectedFileCard" class="hidden mt-4 p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+          <div class="flex items-center gap-3 overflow-hidden">
+            <div class="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0">
+              <i data-lucide="file-text" class="w-5 h-5"></i>
+            </div>
+            <div class="truncate">
+              <div id="fileNameDisplay" class="font-medium text-sm text-white truncate">document.pdf</div>
+              <div id="fileSizeDisplay" class="text-xs text-slate-400">2.4 MB</div>
+            </div>
+          </div>
+          <button id="btnRemoveFile" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Voice & Reading Settings -->
+        <div class="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Narrator Voice Selection -->
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
+              <span>Narrator Voice</span>
+              <button id="btnPreviewVoice" type="button" class="text-brand-400 hover:text-brand-300 normal-case tracking-normal font-normal flex items-center gap-1 text-[11px]">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                <span id="previewVoiceLabel">Preview Voice</span>
+              </button>
+            </label>
+            <div class="relative">
+              <select id="voiceSelect" class="w-full bg-surface-950/80 border border-white/15 focus:border-brand-500 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all appearance-none pr-10 cursor-pointer">
+                <!-- Dynamically populated from /api/voices -->
+              </select>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+            </div>
+            <p id="voiceDescription" class="text-[11px] text-slate-400 mt-2 leading-relaxed">
+              Expressive female narrator, ideal for narrative fiction.
+            </p>
+          </div>
+
+          <!-- Pace / Speed Slider -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-xs font-semibold uppercase tracking-wider text-slate-400">Narration Speed</label>
+              <span id="speedValueDisplay" class="text-xs font-mono text-brand-400 font-bold">1.0x</span>
+            </div>
+            <div class="pt-2">
+              <input type="range" id="speedSlider" min="0.8" max="1.5" step="0.05" value="1.0" class="w-full accent-brand-500 cursor-pointer">
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+              <span>0.8x (Deliberate)</span>
+              <span>1.0x (Standard)</span>
+              <span>1.5x (Fast)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Cleaner Rules Accordion -->
+        <div class="mt-6 pt-4 border-t border-white/10">
+          <button id="btnToggleFilters" type="button" class="w-full flex items-center justify-between text-xs text-slate-300 hover:text-white py-1">
+            <span class="flex items-center gap-2 font-medium">
+              <i data-lucide="filter" class="w-3.5 h-3.5 text-brand-400"></i>
+              Smart Layout Filter Settings (Knows What to Read)
+            </span>
+            <i data-lucide="chevron-down" id="filterChevron" class="w-4 h-4 text-slate-400 transition-transform"></i>
+          </button>
+
+          <div id="filterOptions" class="hidden pt-3 space-y-2.5 text-xs text-slate-300">
+            <label class="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" id="chkFilterHeadersFooters" checked class="rounded border-white/20 text-brand-500 focus:ring-0 accent-brand-500 w-4 h-4">
+              <span>Strip recurring headers, footers & page numbers (e.g. "Chapter 2", "Page 45", ISBNs)</span>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" id="chkFilterCitations" checked class="rounded border-white/20 text-brand-500 focus:ring-0 accent-brand-500 w-4 h-4">
+              <span>Remove academic citations & bracketed notes (e.g. [1], [12-14], (Smith, 2021))</span>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" id="chkUnwrapParagraphs" checked class="rounded border-white/20 text-brand-500 focus:ring-0 accent-brand-500 w-4 h-4">
+              <span>Unwrap PDF line breaks & fix broken hyphens (prevents artificial pauses)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="mt-8">
+          <button id="btnProcessPDF" disabled class="w-full py-3.5 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-brand-500 to-amber-500 text-slate-950 hover:brightness-110 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none transition-all shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2">
+            <i data-lucide="wand-2" class="w-4 h-4"></i>
+            <span>Analyze PDF & Extract Clean Script</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Quick Test Samples Strip -->
+      <div class="flex items-center justify-center gap-3 text-xs text-slate-400">
+        <span>Try with sample files:</span>
+        <button id="btnSampleDigital" class="text-brand-400 hover:text-brand-300 underline underline-offset-2">Digital Book Sample</button>
+        <span>&bull;</span>
+        <button id="btnSampleScanned" class="text-brand-400 hover:text-brand-300 underline underline-offset-2">Photo / Scanned Page Sample</button>
+      </div>
+    </section>
+
+    <!-- STAGE 2: Processing / Progress Bar -->
+    <section id="progressSection" class="hidden space-y-6">
+      <div class="rounded-2xl border border-white/10 bg-surface-900/60 backdrop-blur-xl p-8 text-center shadow-2xl">
+        <div class="w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mx-auto mb-5 text-brand-400 animate-spin">
+          <i data-lucide="loader-2" class="w-7 h-7"></i>
+        </div>
+        <h3 id="progressTitle" class="text-xl font-serif font-medium text-white mb-2">Analyzing PDF</h3>
+        <p id="progressMessage" class="text-sm text-slate-400 mb-6">Extracting pages and detecting photo OCR layers...</p>
+        
+        <!-- Progress Bar Track -->
+        <div class="w-full bg-white/5 rounded-full h-2.5 overflow-hidden border border-white/10 p-0.5 max-w-md mx-auto mb-2">
+          <div id="progressBar" class="bg-gradient-to-r from-brand-500 to-amber-400 h-full rounded-full transition-all duration-300" style="width: 15%"></div>
+        </div>
+        <span id="progressPercent" class="text-xs font-mono text-brand-400">15%</span>
+      </div>
+    </section>
+
+    <!-- STAGE 3: Script Review & Generation Preview -->
+    <section id="reviewSection" class="hidden space-y-6">
+      <div class="rounded-2xl border border-white/10 bg-surface-900/70 backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <h2 class="text-xl font-serif font-medium text-white">Audiobook Script Ready</h2>
+            </div>
+            <p class="text-xs text-slate-400">Review the cleaned text below or make any custom edits before synthesis.</p>
+          </div>
+
+          <button id="btnGenerateAudio" class="py-3 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-brand-500 to-amber-500 text-slate-950 hover:brightness-110 active:scale-[0.99] transition-all shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 shrink-0">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Generate Audiobook (.mp3)</span>
+          </button>
+        </div>
+
+        <!-- Metrics Strip -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 py-5 border-b border-white/10">
+          <div class="p-3 rounded-xl bg-white/5 border border-white/5">
+            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Estimated Duration</span>
+            <span id="metricDuration" class="text-base font-semibold text-brand-400">--</span>
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-white/5">
+            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Word Count</span>
+            <span id="metricWords" class="text-base font-semibold text-white">--</span>
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-white/5">
+            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Pages / OCR</span>
+            <span id="metricPages" class="text-base font-semibold text-white">--</span>
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-white/5">
+            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Noise Removed</span>
+            <span id="metricNoise" class="text-base font-semibold text-emerald-400">--</span>
+          </div>
+        </div>
+
+        <!-- Text Editor / Preview -->
+        <div class="mt-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-brand-400"></i>
+              Narration Script (Editable)
+            </span>
+            <button id="btnResetScript" class="text-[11px] text-slate-400 hover:text-white underline">Reset to Cleaned Original</button>
+          </div>
+          <textarea id="scriptTextarea" rows="12" class="w-full bg-surface-950/90 border border-white/15 focus:border-brand-500 rounded-xl p-4 text-sm text-slate-200 font-serif leading-relaxed focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all resize-y"></textarea>
+        </div>
+
+        <div class="mt-4 flex items-center justify-between text-xs text-slate-400">
+          <span class="flex items-center gap-1.5 text-emerald-400">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+            Headers, footers, & page numbers automatically excluded
+          </span>
+          <button id="btnBackToUpload" class="text-slate-400 hover:text-white underline">Upload Different File</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- STAGE 4: Audiobook Player & Download -->
+    <section id="playerSection" class="hidden space-y-6">
+      <div class="rounded-2xl border border-brand-500/30 bg-surface-900/80 backdrop-blur-xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+        
+        <div class="text-center mb-6">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-medium mb-3">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            <span>Audiobook Generated Successfully</span>
+          </div>
+          <h2 id="audiobookTitle" class="text-2xl font-serif font-medium text-white mb-1">Your Audiobook</h2>
+          <p id="audiobookVoiceTag" class="text-xs text-brand-400 font-medium">Narrated by Aria &bull; Studio Neural Voice</p>
+        </div>
+
+        <!-- Custom Audio Player Card -->
+        <div class="rounded-xl bg-surface-950/80 border border-white/10 p-5 mb-6">
+          <audio id="audioElement" preload="metadata" class="hidden"></audio>
+
+          <!-- Waveform Visualizer Simulation -->
+          <div class="flex items-center justify-center gap-1 h-12 mb-4 px-4 overflow-hidden">
+            <div class="w-1 bg-brand-500/40 rounded-full h-4 animate-pulse"></div>
+            <div class="w-1 bg-brand-500/60 rounded-full h-8 animate-pulse" style="animation-delay: 0.1s"></div>
+            <div class="w-1 bg-brand-500/80 rounded-full h-11 animate-pulse" style="animation-delay: 0.2s"></div>
+            <div class="w-1 bg-brand-400 rounded-full h-6 animate-pulse" style="animation-delay: 0.15s"></div>
+            <div class="w-1 bg-brand-500 rounded-full h-10 animate-pulse" style="animation-delay: 0.25s"></div>
+            <div class="w-1 bg-brand-500/60 rounded-full h-5 animate-pulse" style="animation-delay: 0.3s"></div>
+            <div class="w-1 bg-brand-500/90 rounded-full h-9 animate-pulse" style="animation-delay: 0.18s"></div>
+            <div class="w-1 bg-brand-400 rounded-full h-12 animate-pulse" style="animation-delay: 0.05s"></div>
+            <div class="w-1 bg-brand-500/80 rounded-full h-7 animate-pulse" style="animation-delay: 0.22s"></div>
+            <div class="w-1 bg-brand-500/50 rounded-full h-4 animate-pulse" style="animation-delay: 0.12s"></div>
+          </div>
+
+          <!-- Timeline Scrubber -->
+          <div class="space-y-1.5 mb-4">
+            <input type="range" id="audioScrubber" min="0" max="100" value="0" step="0.1" class="w-full accent-brand-500 cursor-pointer">
+            <div class="flex justify-between text-xs font-mono text-slate-400">
+              <span id="currentTimeDisplay">00:00</span>
+              <span id="totalTimeDisplay">--:--</span>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="flex items-center justify-between">
+            
+            <!-- Speed controls -->
+            <div class="flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/5">
+              <button data-speed="0.8" class="speed-btn px-2 py-1 text-[11px] rounded text-slate-400 hover:text-white">0.8x</button>
+              <button data-speed="1.0" class="speed-btn active px-2 py-1 text-[11px] rounded bg-brand-500 text-slate-950 font-bold">1x</button>
+              <button data-speed="1.25" class="speed-btn px-2 py-1 text-[11px] rounded text-slate-400 hover:text-white">1.25x</button>
+              <button data-speed="1.5" class="speed-btn px-2 py-1 text-[11px] rounded text-slate-400 hover:text-white">1.5x</button>
+            </div>
+
+            <!-- Play / Pause / Skip -->
+            <div class="flex items-center gap-3">
+              <button id="btnSkipBack" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors" title="Rewind 10s">
+                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+              </button>
+
+              <button id="btnPlayPause" class="w-12 h-12 rounded-full bg-brand-500 hover:bg-brand-400 text-slate-950 flex items-center justify-center shadow-lg shadow-brand-500/30 transition-transform active:scale-95">
+                <i data-lucide="play" id="playIcon" class="w-5 h-5 ml-0.5"></i>
+                <i data-lucide="pause" id="pauseIcon" class="w-5 h-5 hidden"></i>
+              </button>
+
+              <button id="btnSkipForward" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors" title="Forward 10s">
+                <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <!-- Volume / Mute -->
+            <div class="flex items-center gap-2">
+              <button id="btnMute" class="text-slate-400 hover:text-white">
+                <i data-lucide="volume-2" id="volumeIcon" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Download & Restart Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a id="btnDownloadAudio" href="#" download="audiobook.mp3" class="flex-1 py-3.5 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-brand-500 to-amber-500 text-slate-950 hover:brightness-110 active:scale-[0.99] transition-all shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Download Audiobook (.MP3)</span>
+          </a>
+          <button id="btnRestart" class="py-3.5 px-6 rounded-xl font-medium text-sm bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-colors flex items-center justify-center gap-2">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span>Convert Another PDF</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TTS Models & Cost Transparency Modal -->
+  <div id="modelGuideModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface-900 border border-white/15 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
+      <button id="btnCloseModelGuide" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-lg hover:bg-white/10">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5 mb-2">
+        <i data-lucide="coins" class="w-5 h-5 text-brand-400"></i>
+        <h3 class="text-lg font-serif font-medium text-white">TTS Models & Cost Comparison</h3>
+      </div>
+      <p class="text-xs text-slate-400 mb-6">
+        Here is the breakdown of free options and the cheapest commercial model APIs available.
+      </p>
+
+      <div id="modelsContainer" class="space-y-4">
+        <!-- Dynamically filled from /api/config/models -->
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-white/10 flex justify-end">
+        <button id="btnDismissGuide" class="py-2 px-5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/15 text-white">
+          Close Guide
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio preview element for voice previews -->
+  <audio id="voicePreviewAudio" class="hidden"></audio>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
+
