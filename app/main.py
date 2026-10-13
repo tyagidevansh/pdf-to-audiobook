@@ -77,6 +77,7 @@ async def upload_pdf(
     file: UploadFile = File(...),
     filter_headers_footers: bool = Form(True),
     filter_citations: bool = Form(True),
+    filter_book_matter: bool = Form(True),
     unwrap_paragraphs: bool = Form(True),
 ):
     """
@@ -116,6 +117,7 @@ async def upload_pdf(
         pdf_path=pdf_path,
         filter_headers_footers=filter_headers_footers,
         filter_citations=filter_citations,
+        filter_book_matter=filter_book_matter,
         unwrap_paragraphs=unwrap_paragraphs,
     )
 
@@ -128,6 +130,7 @@ async def run_extraction_task(
     pdf_path: Path,
     filter_headers_footers: bool,
     filter_citations: bool,
+    filter_book_matter: bool,
     unwrap_paragraphs: bool,
 ):
     def on_progress(pct: int, msg: str):
@@ -141,6 +144,7 @@ async def run_extraction_task(
             progress_callback=on_progress,
             filter_headers_footers=filter_headers_footers,
             filter_citations=filter_citations,
+            filter_book_matter=filter_book_matter,
             unwrap_paragraphs=unwrap_paragraphs,
         )
 

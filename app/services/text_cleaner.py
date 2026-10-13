@@ -38,18 +38,38 @@ class TextCleaner:
         re.compile(r"^[-=_*~]{3,}$"),  # Horizontal divider rules
     ]
 
-    # Chapter / Section heading patterns
+    # Chapter / Section heading patterns. Introduction and preface deliberately
+    # do not appear here: they are treated as optional front matter by default.
     CHAPTER_HEADING_PATTERN = re.compile(
         r"^(?:chapter\s+(?:\d+|[ivxlcdm]+|one|two|three|four|five|six|seven|eight|nine|ten)|"
-        r"part\s+(?:\d+|[ivxlcdm]+|one|two|three|four|five)|prologue|epilogue|introduction|preface)\b",
+        r"part\s+(?:\d+|[ivxlcdm]+|one|two|three|four|five)|book\s+(?:\d+|[ivxlcdm]+|one|two|three|four|five)|prologue|epilogue)\b",
         re.IGNORECASE
     )
+
+    FRONT_MATTER_HEADING_PATTERN = re.compile(
+        r"^(?:table\s+of\s+contents|contents|copyright|dedication|epigraph|foreword|"
+        r"preface|introduction|acknowledg(?:e)?ments?|list\s+of\s+(?:illustrations|figures|tables)|"
+        r"publication\s+(?:information|data)|title\s+page)\b",
+        re.IGNORECASE,
+    )
+    BACK_MATTER_HEADING_PATTERN = re.compile(
+        r"^(?:about\s+(?:the\s+)?author|also\s+by|other\s+books\s+by|bibliography|"
+        r"references|index|endnotes?|notes|glossary|further\s+reading|permissions)\b",
+        re.IGNORECASE,
+    )
+    LEGAL_PAGE_PATTERN = re.compile(
+        r"\b(?:copyright|all rights reserved|library of congress|isbn|printed in|"
+        r"published by|no part of this (?:book|publication))\b",
+        re.IGNORECASE,
+    )
+    CONTENTS_ENTRY_PATTERN = re.compile(r"(?:\.{2,}|…{2,})\s*\d+\s*$|\s\d{1,4}\s*$")
 
     def clean_document(
         self,
         raw_pages: List[Dict[str, Any]],
         filter_headers_footers: bool = True,
         filter_citations: bool = True,
+        filter_book_matter: bool = True,
         unwrap_paragraphs: bool = True,
     ) -> Tuple[str, CleaningStats]:
         """
@@ -115,6 +135,12 @@ class TextCleaner:
             page_combined = "\n\n".join(page_text_lines)
             cleaned_page_texts.append(page_combined)
 
+        # A book's title page, contents, foreword, legal notices and index are
+        # usually valid text, so line-level noise filters cannot remove them.
+        # Detect their page-level structure before merging the narration.
+        if filter_book_matter:
+            cleaned_page_texts = self._remove_book_matter(cleaned_page_texts, stats)
+
         # Step 2: Merge full text across pages
         full_text = "\n\n".join(cleaned_page_texts)
 
@@ -144,6 +170,89 @@ class TextCleaner:
         full_text = re.sub(r"\n{3,}", "\n\n", full_text).strip()
 
         return full_text, stats
+
+    def _remove_book_matter(
+        self, page_texts: List[str], stats: CleaningStats
+    ) -> List[str]:
+        """Remove clearly non-narrative book pages without guessing at body text.
+
+        If a real chapter/prologue marker occurs after recognised front matter,
+        everything before that marker is safely considered book setup. For books
+        without conventional chapter headings we only remove explicitly labelled
+        pages, avoiding the risk of discarding the opening of the story.
+        """
+        first_anchor = next(
+            (i for i, text in enumerate(page_texts) if self._is_narrative_anchor(text)),
+            None,
+        )
+        has_recognised_front_matter = (
+            first_anchor is not None
+            and any(self._is_front_matter_page(text) for text in page_texts[:first_anchor])
+        )
+
+        retained: List[str] = []
+        for index, text in enumerate(page_texts):
+            if not text.strip():
+                continue
+
+            is_explicit_matter = (
+                self._is_front_matter_page(text)
+                or self._is_back_matter_page(text)
+                or self._is_contents_page(text)
+                or self._is_legal_page(text)
+            )
+            is_leading_book_setup = (
+                has_recognised_front_matter
+                and first_anchor is not None
+                and index < first_anchor
+            )
+
+            if is_explicit_matter or is_leading_book_setup:
+                stats.book_matter_pages_removed += 1
+                continue
+            retained.append(text)
+
+        return retained
+
+    def _first_meaningful_line(self, text: str) -> str:
+        return next(iter(self._leading_lines(text)), "")
+
+    def _leading_lines(self, text: str, limit: int = 8) -> List[str]:
+        """Return early non-empty lines; PDF blocks may put a title before a heading."""
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        return lines[:limit]
+
+    def _is_front_matter_page(self, text: str) -> bool:
+        return any(self.FRONT_MATTER_HEADING_PATTERN.match(line) for line in self._leading_lines(text))
+
+    def _is_back_matter_page(self, text: str) -> bool:
+        return any(self.BACK_MATTER_HEADING_PATTERN.match(line) for line in self._leading_lines(text))
+
+    def _is_legal_page(self, text: str) -> bool:
+        # Copyright language can be long, but a prose chapter should not contain
+        # several publication markers packed together.
+        return len(text.split()) < 550 and len(self.LEGAL_PAGE_PATTERN.findall(text)) >= 2
+
+    def _is_contents_page(self, text: str) -> bool:
+        if any(
+            re.match(r"^(?:table\s+of\s+)?contents\b", line, re.IGNORECASE)
+            for line in self._leading_lines(text)
+        ):
+            return True
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        entry_lines = sum(bool(self.CONTENTS_ENTRY_PATTERN.search(line)) for line in lines)
+        return len(lines) >= 4 and entry_lines >= 3
+
+    def _is_narrative_anchor(self, text: str) -> bool:
+        leading_lines = self._leading_lines(text)
+        if any(self.CHAPTER_HEADING_PATTERN.match(line) for line in leading_lines):
+            return True
+        # Common minimalist chapter styles: a standalone numeral followed by
+        # prose, or a numeral and title on the same first line.
+        return any(
+            re.match(r"^(?:\d+|[ivxlcdm]+)(?:\s*[.:—-]\s*|\s*$)", line, re.IGNORECASE)
+            for line in leading_lines
+        )
 
     def _detect_recurring_margin_text(
         self, pages: List[Dict[str, Any]]

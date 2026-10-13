@@ -184,12 +184,16 @@
           <button id="btnToggleFilters" type="button" class="w-full flex items-center justify-between text-xs text-slate-300 hover:text-white py-1">
             <span class="flex items-center gap-2 font-medium">
               <i data-lucide="filter" class="w-3.5 h-3.5 text-brand-400"></i>
-              Smart Layout Filter Settings (Knows What to Read)
+              Smart Layout Filter Settings
             </span>
             <i data-lucide="chevron-down" id="filterChevron" class="w-4 h-4 text-slate-400 transition-transform"></i>
           </button>
 
           <div id="filterOptions" class="hidden pt-3 space-y-2.5 text-xs text-slate-300">
+            <label class="flex items-start gap-2.5 cursor-pointer">
+              <input type="checkbox" id="chkFilterBookMatter" checked class="mt-0.5 rounded border-white/20 text-brand-500 focus:ring-0 accent-brand-500 w-4 h-4">
+              <span><strong class="font-medium text-slate-200">Skip book setup & reference pages</strong><br><span class="text-slate-400">Removes title, copyright, contents, foreword, preface, introduction, indexes, and bibliographies before narration.</span></span>
+            </label>
             <label class="flex items-center gap-2.5 cursor-pointer">
               <input type="checkbox" id="chkFilterHeadersFooters" checked class="rounded border-white/20 text-brand-500 focus:ring-0 accent-brand-500 w-4 h-4">
               <span>Strip recurring headers, footers & page numbers (e.g. "Chapter 2", "Page 45", ISBNs)</span>
@@ -295,7 +299,7 @@
         <div class="mt-4 flex items-center justify-between text-xs text-slate-400">
           <span class="flex items-center gap-1.5 text-emerald-400">
             <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-            Headers, footers, & page numbers automatically excluded
+            Book setup, page furniture, & page numbers automatically excluded
           </span>
           <button id="btnBackToUpload" class="text-slate-400 hover:text-white underline">Upload Different File</button>
         </div>

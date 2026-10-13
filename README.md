@@ -13,6 +13,7 @@ An intelligent proof-of-concept web application that converts **any PDF** (inclu
   - **Running Header & Footer Suppression**: Detects repeating book titles, chapter headers, copyright marks across pages and excludes them from speech.
   - **Page Number Removal**: Filters out standalone page numbers (e.g. `42`, `- 13 -`, `Page 5 of 80`).
   - **Footnote & Citation Filtering**: Cleans out bracketed citations `[1]`, `[1-3]`, and bottom footnote annotations so narrator flow isn't disrupted.
+  - **Book Structure Detection**: Removes title pages, copyright notices, contents, forewords, prefaces, introductions, indexes, bibliographies, and other reference pages by default. The setting can be turned off for documents where those pages should be read.
   - **Hyphenation Repair**: Automatically welds broken words across linebreaks (`tempestu- \n ous` &rarr; `tempestuous`).
   - **Paragraph Flow Reconstruction**: Unwraps hard line breaks while respecting true paragraph indents and section headings.
   - **Interactive Script Inspector**: Users can view the cleaned text, see noise reduction audit stats, and make tweaks before generating audio.

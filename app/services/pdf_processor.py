@@ -29,6 +29,7 @@ class PDFProcessor:
         progress_callback: Optional[Callable[[int, str], Any]] = None,
         filter_headers_footers: bool = True,
         filter_citations: bool = True,
+        filter_book_matter: bool = True,
         unwrap_paragraphs: bool = True,
     ) -> ExtractResponse:
         """
@@ -53,6 +54,7 @@ class PDFProcessor:
             raw_pages,
             filter_headers_footers=filter_headers_footers,
             filter_citations=filter_citations,
+            filter_book_matter=filter_book_matter,
             unwrap_paragraphs=unwrap_paragraphs,
         )
 
@@ -115,7 +117,9 @@ class PDFProcessor:
 
             rect = page.rect
             h = rect.height
-            blocks = page.get_text("blocks")
+            # Asking PyMuPDF to sort gives a stable top-to-bottom reading order,
+            # which is essential for headings, contents pages, and clean narration.
+            blocks = page.get_text("blocks", sort=True)
 
             # Check if page has digital text blocks
             # block format: (x0, y0, x1, y1, text, block_no, block_type)
@@ -200,7 +204,7 @@ class PDFProcessor:
                 blocks_dict[b_num]["bottom"] = max(blocks_dict[b_num]["bottom"], bottom)
 
             result_blocks: List[Dict[str, Any]] = []
-            for b_num, info in blocks_dict.items():
+            for b_num, info in sorted(blocks_dict.items(), key=lambda item: item[1]["top"]):
                 text = " ".join(info["words"]).strip()
                 if not text:
                     continue

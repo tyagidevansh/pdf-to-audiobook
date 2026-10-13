@@ -24,6 +24,7 @@ class CleaningStats(BaseModel):
     footers_removed: int = 0
     page_numbers_removed: int = 0
     citations_removed: int = 0
+    book_matter_pages_removed: int = 0
     hyphens_fixed: int = 0
     paragraphs_formatted: int = 0
 

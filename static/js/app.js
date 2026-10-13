@@ -29,6 +29,7 @@ const filterOptions = document.getElementById("filterOptions");
 const filterChevron = document.getElementById("filterChevron");
 const chkFilterHeadersFooters = document.getElementById("chkFilterHeadersFooters");
 const chkFilterCitations = document.getElementById("chkFilterCitations");
+const chkFilterBookMatter = document.getElementById("chkFilterBookMatter");
 const chkUnwrapParagraphs = document.getElementById("chkUnwrapParagraphs");
 
 const uploadSection = document.getElementById("uploadSection");
@@ -287,6 +288,7 @@ async function startExtraction() {
   formData.append("file", selectedFile);
   formData.append("filter_headers_footers", chkFilterHeadersFooters.checked);
   formData.append("filter_citations", chkFilterCitations.checked);
+  formData.append("filter_book_matter", chkFilterBookMatter.checked);
   formData.append("unwrap_paragraphs", chkUnwrapParagraphs.checked);
 
   try {
@@ -387,7 +389,8 @@ function displayExtractionReview(job) {
   const noiseCount = (job.stats?.headers_removed || 0) +
                      (job.stats?.footers_removed || 0) +
                      (job.stats?.page_numbers_removed || 0) +
-                     (job.stats?.citations_removed || 0);
+                     (job.stats?.citations_removed || 0) +
+                     (job.stats?.book_matter_pages_removed || 0);
   metricNoise.textContent = `${noiseCount} items filtered`;
 
   showSection(reviewSection);

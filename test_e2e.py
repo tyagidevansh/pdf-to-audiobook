@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 from app.services.pdf_processor import pdf_processor
 from app.services.tts_engine import tts_engine
+from app.services.text_cleaner import cleaner
 from app.config import CURATED_VOICES, TTS_MODELS_INFO, AUDIO_DIR
 
 async def run_all_tests():
@@ -17,8 +18,26 @@ async def run_all_tests():
     print(f"✓ {len(CURATED_VOICES)} curated voices available.")
     print(f"✓ {len(TTS_MODELS_INFO)} free TTS engine profile configured.")
 
-    # 2. Digital PDF extraction & Smart Cleaning
-    print("\n[2] Testing Digital PDF Extraction & Smart Cleaning...")
+    # 2. Book structure detection (front matter and reference pages)
+    print("\n[2] Testing Book Matter Detection...")
+    synthetic_pages = [
+        {"blocks": [{"text": "THE EXAMPLE BOOK", "is_top": False, "is_bottom": False}]},
+        {"blocks": [{"text": "Copyright 2025 Example Press. All rights reserved. ISBN: 1234", "is_top": False, "is_bottom": False}]},
+        {"blocks": [{"text": "Contents\nForeword ........ 1\nChapter One ........ 7\nChapter Two ........ 24", "is_top": False, "is_bottom": False}]},
+        {"blocks": [{"text": "Foreword\nThis note is not part of the requested audiobook.", "is_top": False, "is_bottom": False}]},
+        {"blocks": [{"text": "Chapter One\nThe story begins here, with the first scene.", "is_top": False, "is_bottom": False}]},
+        {"blocks": [{"text": "The next page continues the story normally.", "is_top": False, "is_bottom": False}]},
+        {"blocks": [{"text": "Index\nA 1\nB 2\nC 3", "is_top": False, "is_bottom": False}]},
+    ]
+    book_text, book_stats = cleaner.clean_document(synthetic_pages)
+    assert "The story begins here" in book_text
+    assert "Foreword" not in book_text and "Contents" not in book_text
+    assert "Index" not in book_text
+    assert book_stats.book_matter_pages_removed == 5
+    print("✓ Front matter, contents, and index pages are excluded before narration.")
+
+    # 3. Digital PDF extraction & Smart Cleaning
+    print("\n[3] Testing Digital PDF Extraction & Smart Cleaning...")
     digital_path = Path("sample_pdfs/sample_digital.pdf")
     res1 = await pdf_processor.extract_and_clean(
         job_id="test_e2e_digital",
@@ -40,8 +59,8 @@ async def run_all_tests():
     assert "Page 1" not in res1.cleaned_text, "Page number footer should be excluded!"
     assert "tempestuous" in res1.cleaned_text, "Hyphenated 'tempestu- ous' should be cleanly joined!"
 
-    # 3. Scanned / Photo PDF OCR Extraction
-    print("\n[3] Testing Scanned/Photo PDF OCR Extraction...")
+    # 4. Scanned / Photo PDF OCR Extraction
+    print("\n[4] Testing Scanned/Photo PDF OCR Extraction...")
     scanned_path = Path("sample_pdfs/sample_scanned.pdf")
     res2 = await pdf_processor.extract_and_clean(
         job_id="test_e2e_scanned",
@@ -58,8 +77,8 @@ async def run_all_tests():
     assert "mountain" in res2.cleaned_text.lower() or "traveler" in res2.cleaned_text.lower()
     print("✓ Scanned page OCR extracted text successfully!")
 
-    # 4. Audio Generation test
-    print("\n[4] Testing Audio Generation Pipeline with Edge-TTS...")
+    # 5. Audio Generation test
+    print("\n[5] Testing Audio Generation Pipeline with Edge-TTS...")
     audio_output = AUDIO_DIR / "test_e2e_digital.mp3"
     await tts_engine.synthesize(
         job_id="test_e2e_digital",
