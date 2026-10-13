@@ -19,7 +19,7 @@ An intelligent proof-of-concept web application that converts **any PDF** (inclu
 - **100% Free Studio-Grade Voice Synthesis**:
   - Built-in integration with **Microsoft Edge Neural Speech** (`edge-tts`).
   - Zero API key required, zero monthly cloud bill, unlimited generation.
-  - Curated narrator voices tailored specifically for audiobooks (Aria, Guy, Christopher, Jenny, Ryan, Sonia).
+  - 13 curated narrator voices tailored specifically for audiobooks, including US, British, Australian, and Indian English accents.
   - Includes narration speed control (0.8x to 1.5x) and a voice sample preview feature.
 - **Clean, Luxury Dark UI**:
   - Modern, responsive interface with drag-and-drop file upload.
@@ -31,15 +31,11 @@ An intelligent proof-of-concept web application that converts **any PDF** (inclu
 
 ---
 
-## TTS Engine & Cost Comparison
+## Free narration engine
 
-| Engine / Provider | Model | Cost per 1M Characters | API Key Required | Quality / Best Use Case |
-|---|---|---|---|---|
-| **Edge-TTS (Active Built-in)** | Microsoft Edge Neural Voices | **$0.00 (100% Free)** | **No** | **Studio Neural Quality**. Best for free, high-fidelity audiobooks. |
-| **Google Cloud TTS** | Journey & Neural2 | **$16.00 / 1M chars** (1,000,000 chars/mo **FREE**) | Yes | Exceptional realism. Very cost-effective with free tier. |
-| **OpenAI Audio TTS** | `tts-1` | **$15.00 / 1M chars** ($0.015 / 1k chars) | Yes | Good cadence, simple REST API. |
-| **Deepgram** | Aura | **$15.00 / 1M chars** ($0.015 / 1k chars) | Yes | Ultra-low latency conversational voices. |
-| **ElevenLabs** | Multilingual v2 | **$150.00 – $300.00 / 1M chars** | Yes | Elite emotional acting, but expensive for book-length audio. |
+Audion uses only the built-in **Microsoft Edge Neural Speech** engine via `edge-tts`.
+It needs no API key, account, credit card, paid plan, or usage credits. The narrator
+library includes US, British, Australian, and Indian English voices.
 
 ---
 
@@ -74,7 +70,7 @@ Then open your browser at **[http://localhost:8000](http://localhost:8000)**.
 ```
 pdf-to-audiobook/
 ├── app/
-│   ├── config.py             # App settings, curated voices, TTS model cost guide
+│   ├── config.py             # App settings and free curated voice library
 │   ├── main.py               # FastAPI application & REST endpoints
 │   ├── models/
 │   │   └── schemas.py        # Pydantic data models & request/response schemas

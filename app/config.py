@@ -78,71 +78,79 @@ CURATED_VOICES = [
         "style": "Conversational & Sincere",
         "description": "Modern conversational tone, authentic and easygoing.",
         "recommended": False
+    },
+    {
+        "id": "en-US-AvaMultilingualNeural",
+        "name": "Ava",
+        "gender": "Female",
+        "accent": "US",
+        "style": "Bright & Versatile",
+        "description": "A lively, polished voice with a modern, adaptable delivery.",
+        "recommended": False
+    },
+    {
+        "id": "en-US-EmmaMultilingualNeural",
+        "name": "Emma",
+        "gender": "Female",
+        "accent": "US",
+        "style": "Warm & Conversational",
+        "description": "Relaxed and reassuring, with a natural conversational rhythm.",
+        "recommended": False
+    },
+    {
+        "id": "en-US-BrianMultilingualNeural",
+        "name": "Brian",
+        "gender": "Male",
+        "accent": "US",
+        "style": "Clear & Contemporary",
+        "description": "A confident, approachable voice for long-form nonfiction and essays.",
+        "recommended": False
+    },
+    {
+        "id": "en-GB-LibbyNeural",
+        "name": "Libby",
+        "gender": "Female",
+        "accent": "British",
+        "style": "Lively & Clear",
+        "description": "A crisp British voice with an upbeat, easy-to-follow tone.",
+        "recommended": False
+    },
+    {
+        "id": "en-AU-NatashaNeural",
+        "name": "Natasha",
+        "gender": "Female",
+        "accent": "Australian",
+        "style": "Easygoing & Warm",
+        "description": "A relaxed Australian voice that keeps long listening sessions light.",
+        "recommended": False
+    },
+    {
+        "id": "en-IN-NeerjaNeural",
+        "name": "Neerja",
+        "gender": "Female",
+        "accent": "Indian English",
+        "style": "Calm & Precise",
+        "description": "A composed, articulate voice with a clear Indian English accent.",
+        "recommended": False
     }
 ]
 
-# TTS Model Comparison Guide
+# Only free, built-in synthesis is exposed by the application.  This endpoint
+# is retained for the UI's free-engine information sheet.
 TTS_MODELS_INFO = [
     {
-        "provider": "Edge-TTS (Active Built-in)",
+        "provider": "Edge Neural Speech",
         "model": "Microsoft Edge Neural Voices",
         "price_per_1m_chars": "$0.00",
-        "cost_summary": "100% Free & Unlimited",
+        "cost_summary": "Free to use — no account or API key",
         "api_key_required": False,
-        "quality": "Studio Neural (Audiobook Grade)",
+        "quality": "Natural neural narration",
         "pros": [
-            "Completely free with no API key or credit card needed",
-            "High quality natural human voices with novel/narrator intonations",
-            "Instant conversion with zero cloud bill"
+            "Every narrator in the library uses this free engine",
+            "No credit card, subscription, or API key",
+            "Choose from a growing set of English accents and styles"
         ],
         "cons": ["Requires active internet connection during synthesis"]
-    },
-    {
-        "provider": "Google Cloud Text-to-Speech",
-        "model": "Journey & Neural2",
-        "price_per_1m_chars": "$16.00",
-        "cost_summary": "$16.00 / 1M chars (1,000,000 chars FREE / month)",
-        "api_key_required": True,
-        "quality": "Exceptional",
-        "pros": [
-            "Generous monthly free tier (1M chars free every month)",
-            "Journey voices are among the most natural commercial voices",
-            "Cheapest commercial tier after free quota"
-        ],
-        "cons": ["Requires Google Cloud Console setup and billing credit card"]
-    },
-    {
-        "provider": "OpenAI Audio TTS",
-        "model": "tts-1",
-        "price_per_1m_chars": "$15.00",
-        "cost_summary": "$0.015 / 1,000 chars (~$15.00 / 1M chars)",
-        "api_key_required": True,
-        "quality": "Very Good",
-        "pros": [
-            "Easy plug-and-play if you already have an OpenAI API key",
-            "Voices like Onyx and Alloy have good cadence"
-        ],
-        "cons": ["No free tier; charges per character generated"]
-    },
-    {
-        "provider": "Deepgram",
-        "model": "Aura",
-        "price_per_1m_chars": "$15.00",
-        "cost_summary": "$0.015 / 1,000 chars (~$15.00 / 1M chars)",
-        "api_key_required": True,
-        "quality": "Very Good (Ultra-low latency)",
-        "pros": ["Extremely fast streaming", "Good pricing parity with OpenAI"],
-        "cons": ["Smaller voice catalog compared to Azure/Edge"]
-    },
-    {
-        "provider": "ElevenLabs",
-        "model": "Multilingual v2 / Flash",
-        "price_per_1m_chars": "$150.00 - $300.00",
-        "cost_summary": "$0.15 - $0.30 / 1,000 chars ($150 - $300 / 1M chars)",
-        "api_key_required": True,
-        "quality": "Industry Leading",
-        "pros": ["Best-in-class emotional acting and voice cloning"],
-        "cons": ["Expensive for full-length books (a 100k-word book can cost $75+)"]
     }
 ]
 

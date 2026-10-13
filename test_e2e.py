@@ -12,9 +12,10 @@ async def run_all_tests():
     # 1. Config tests
     print("\n[1] Checking Curated Voices & Models...")
     assert len(CURATED_VOICES) >= 5, "Should have at least 5 curated voices"
-    assert len(TTS_MODELS_INFO) >= 4, "Should have model cost breakdown"
+    assert len(TTS_MODELS_INFO) == 1, "Only the free built-in narration engine should be exposed"
+    assert not TTS_MODELS_INFO[0]["api_key_required"], "Free narration must not require an API key"
     print(f"✓ {len(CURATED_VOICES)} curated voices available.")
-    print(f"✓ {len(TTS_MODELS_INFO)} TTS engine cost profiles configured.")
+    print(f"✓ {len(TTS_MODELS_INFO)} free TTS engine profile configured.")
 
     # 2. Digital PDF extraction & Smart Cleaning
     print("\n[2] Testing Digital PDF Extraction & Smart Cleaning...")

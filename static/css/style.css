@@ -1,4 +1,14 @@
-/* Custom styles for Audion */
+/* Audion's small visual layer on top of Tailwind */
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 18% 3%, rgba(99, 102, 241, 0.14), transparent 28rem),
+    radial-gradient(circle at 86% 90%, rgba(34, 211, 238, 0.08), transparent 24rem);
+}
 
 /* Modern scrollbars */
 ::-webkit-scrollbar {
@@ -6,20 +16,20 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d1117;
+  background: #111322;
 }
 ::-webkit-scrollbar-thumb {
-  background: #232d3f;
+  background: #2d3149;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+  background: #484e6e;
 }
 
 /* Custom range inputs */
 input[type="range"] {
   -webkit-appearance: none;
-  background: #1f2937;
+  background: #252940;
   height: 6px;
   border-radius: 3px;
   outline: none;
@@ -31,9 +41,9 @@ input[type="range"]::-webkit-slider-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #f59e0b;
+  background: #818cf8;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.65);
   transition: transform 0.1s ease;
 }
 
@@ -43,9 +53,50 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 /* Glass card styling */
 .glass-panel {
-  background: rgba(13, 17, 23, 0.7);
+  background: rgba(17, 19, 34, 0.7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.upload-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(125deg, rgba(129, 140, 248, 0.08), transparent 35%, rgba(34, 211, 238, 0.04));
+}
+
+.dropzone {
+  position: relative;
+  isolation: isolate;
+}
+
+.dropzone::after {
+  content: "";
+  position: absolute;
+  width: 12rem;
+  height: 12rem;
+  right: -5rem;
+  top: -7rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.08);
+  filter: blur(10px);
+  z-index: -1;
+}
+
+button, a, select, input, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid #a5b4fc;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .dropzone {
+    padding: 2rem 1rem;
+  }
 }
 

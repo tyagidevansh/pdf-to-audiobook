@@ -550,16 +550,14 @@ async function loadModelsGuide() {
       const card = document.createElement("div");
       card.className = "p-4 rounded-xl bg-white/5 border border-white/10";
 
-      const badge = !m.api_key_required
-        ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Free & Active</span>'
-        : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">${m.cost_summary}</span>`;
+      const badge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Free & active</span>';
 
       card.innerHTML = `
         <div class="flex items-center justify-between mb-2">
           <div class="font-bold text-sm text-white">${m.provider}</div>
           ${badge}
         </div>
-        <div class="text-xs text-slate-400 mb-2"><strong>Model:</strong> ${m.model} &bull; <strong>Quality:</strong> ${m.quality}</div>
+        <div class="text-xs text-slate-400 mb-2"><strong>Engine:</strong> ${m.model} &bull; <strong>Sound:</strong> ${m.quality}</div>
         <ul class="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
           ${m.pros.map((p) => `<li>${p}</li>`).join("")}
           ${m.cons.map((c) => `<li class="text-slate-400 italic">${c}</li>`).join("")}

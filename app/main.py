@@ -67,7 +67,7 @@ async def get_voices():
 
 @app.get("/api/config/models")
 async def get_models_info():
-    """Returns transparent cost breakdown of TTS engines (Free vs Cheap Cloud APIs)."""
+    """Returns information about the app's free, built-in narration engine."""
     return TTS_MODELS_INFO
 
 
